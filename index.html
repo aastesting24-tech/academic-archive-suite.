@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Academic Archive Suite</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Courses</h2>
+    <ul>
+      <li onclick="loadCourse('MA_Economics')">MA_Economics</li>
+      <li onclick="loadCourse('MA_English')">MA_English</li>
+      <li onclick="loadCourse('MA_Mathematics')">MA_Mathematics</li>
+      <li onclick="loadCourse('MA_Political_Science')">MA_Political_Science</li>
+      <li onclick="loadCourse('MBA')">MBA</li>
+      <li onclick="loadCourse('MCA')">MCA</li>
+    </ul>
+  </div>
+
+  <div class="main">
+    <div class="header">
+      <img src="logo.png" alt="Adikavi Nannaya University Logo" class="logo">
+      <h1>Adikavi Nannaya University</h1>
+      <h3>Academic Archive Suite</h3>
+    </div>
+
+    <div class="semesters"></div>
+    <div class="content" id="content">
+      <p>Welcome! Select a course to view its semester syllabus.</p>
+    </div>
+
+    <div class="footer" id="footer">
+      <p>Designed by Computer Science Department - AKNU MSN Campus Kakinada</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
