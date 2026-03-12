@@ -202,7 +202,3 @@ body {
 html {
   scroll-behavior: smooth;
 }
-
-body {
-  background: linear-gradient(to bottom, #9333ea, #3b82f6);
-}
