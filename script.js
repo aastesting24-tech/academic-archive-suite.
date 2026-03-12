@@ -14,7 +14,7 @@ const courseData = {
     "Sem4": "1iwTTRRU7SGtWyHmoxn6dBadG9a5p9r9X"
   },
   "MA_Mathematics": {
-    "Regulation": "1zl4y4KdsFKPW8YMRRLHbZxlllRqrXaC",
+    "Regulation": "1zI4y4KdsFKPW8YMRRLHblZxlllRqrXaC",
     "Sem1": "150UvzyvWbQ3a9vlxVWPGZE3qy6OrXj-7",
     "Sem2": "1S6foaOs6u4m_5qsA6KC_SwEz09CVgOpy",
     "Sem3": "11AsxTZSrOTLeMdZjfsH2mPc-dLiJSxkI",
@@ -89,3 +89,4 @@ function loadSemester(course, semester) {
     </div>
   `;
 }
+
