@@ -2,38 +2,95 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Academic Archive Suite</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="logo.png">
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Courses</h2>
-    <ul>
-      <li onclick="loadCourse('MA_Economics')">MA_Economics</li>
-      <li onclick="loadCourse('MA_English')">MA_English</li>
-      <li onclick="loadCourse('MA_Mathematics')">MA_Mathematics</li>
-      <li onclick="loadCourse('MA_Political_Science')">MA_Political_Science</li>
-      <li onclick="loadCourse('MBA')">MBA</li>
-      <li onclick="loadCourse('MCA')">MCA</li>
-    </ul>
-  </div>
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="logo">
+      <img src="logo.png" alt="University Logo">
+      <span>Adikavi Nannaya University</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#home" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#about">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
 
-  <div class="main">
-    <div class="header">
-      <img src="logo.png" alt="Adikavi Nannaya University Logo" class="logo">
-      <h1>Adikavi Nannaya University</h1>
-      <h3>Academic Archive Suite</h3>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Academic Archive Suite</h1>
+      <p>Access Course Syllabi and Resources</p>
+      <a href="#courses" class="btn">Browse Courses</a>
+    </div>
+    <div class="hero-image">
+      <img src="books-cap.png" alt="Books, Graduation Cap, Diploma">
+    </div>
+  </section>
+
+  <!-- Courses Section -->
+  <section id="courses" class="courses">
+    <h2>Available Courses</h2>
+    <div class="course-list">
+      <div class="course-card" onclick="loadCourse('MA_Economics')">
+        <h3>MA_Economics</h3>
+        <p>Explores advanced theories of growth, development, and policy.</p>
+      </div>
+      <div class="course-card" onclick="loadCourse('MA_English')">
+        <h3>MA_English</h3>
+        <p>Engages with literature, language, and critical theory.</p>
+      </div>
+      <div class="course-card" onclick="loadCourse('MA_Mathematics')">
+        <h3>MA_Mathematics</h3>
+        <p>Develops expertise in pure and applied mathematics.</p>
+      </div>
+      <div class="course-card" onclick="loadCourse('MA_Political_Science')">
+        <h3>MA_Political_Science</h3>
+        <p>Examines governance, political thought, and international relations.</p>
+      </div>
+      <div class="course-card" onclick="loadCourse('MBA')">
+        <h3>MBA</h3>
+        <p>Focuses on management, strategy, and leadership.</p>
+      </div>
+      <div class="course-card" onclick="loadCourse('MCA')">
+        <h3>MCA</h3>
+        <p>Trains in computer applications, software development, and IT systems.</p>
+      </div>
     </div>
 
+    <!-- Semester tabs -->
     <div class="semesters"></div>
-    <div class="content" id="content">
-      <p>Welcome! Select a course to view its semester syllabus.</p>
-    </div>
 
-    <div class="footer" id="footer">
-      <p>Designed by Computer Science Department - AKNU MSN Campus Kakinada</p>
-    </div>
-  </div>
+    <!-- Course content -->
+    <div id="content"></div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about">
+    <br><h2 align="center">About This Portal</h2><br>
+    <p>
+      This portal provides students with easy access to course syllabi, regulations, and semester-wise materials.
+      By selecting a course, you can quickly navigate through its folders and view relevant documents.
+      The goal is to make academic resources organized and accessible in one place.
+      Beyond just syllabi, the portal also serves as a centralized hub for academic planning. 
+      Students can explore regulations to understand program requirements, review semester content to prepare for classes, 
+      and stay aligned with their academic journey.
+      Our vision is to simplify learning by bringing all essential resources together, 
+      ensuring that every student can focus more on their studies and less on searching for materials.
+    </p><br>
+    <p align="center">For any queries, email: aastesting24@gmail.com</p>
+  </section>
+
+  <footer class="site-footer">
+    <p>Designed by Computer Science Department - AKNU MSN Campus Kakinada</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
