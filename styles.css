@@ -203,8 +203,6 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (max-width: 768px) {
-  body {
-    background: #9333ea; /* solid purple for mobile */
-  }
+body {
+  background: linear-gradient(to bottom, #9333ea, #3b82f6);
 }
