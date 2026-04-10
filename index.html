@@ -16,30 +16,38 @@
       <span>Adikavi Nannaya University</span>
     </div>
 	<nav>
-  	<ul>
-    	<li><div id="buttonDiv"></div></li>
-    	<li><img id="user-pic" src="" alt="Profile Picture"></li>
-    	<li>
-      	<div id="user-info" style="display:none;">
-        	<p>User: <span id="user-name"></span></p>
-        	<div id="user-role"></div>
-        	<button onclick="signOut()">Sign Out</button>
-      	</div>
-    	</li>
-    	<li><a href="#home" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">Home</a></li>
-    	<li><a href="#about">About</a></li>
+	<ul>
+		<li><div id="buttonDiv"></div></li>
+		<li><img id="user-pic" src="" alt="Profile Picture"></li>
+		<li>
+		<div id="user-info">
+			<p>User: <span id="user-name"></span></p>
+			<div id="user-role"></div>
+			<button onclick="signOut()">Sign Out</button>
+		</div>
+		</li>
+		<li><a href="#home" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">Home</a></li>
+		<li><a href="#about">About</a></li>
 		<li><a href="#contact">Contact</a></li>
-  	</ul>
+	</ul>
 	</nav>
+	
 	<script src="https://accounts.google.com/gsi/client" async defer></script>
 	<script>
-  	// Run after login
-  		setUserRole(drive, userEmail).then(() => {
-    	document.getElementById("user-role").textContent = `Role: ${role}`;
-    	if (courseName) {
-      	document.getElementById("user-role").textContent += ` (${courseName})`;
-    	}
-  	});
+	// Run after login is successful
+	async function showUserRole() {
+		await setUserRole(drive, userEmail);
+		const roleDiv = document.getElementById("user-role");
+		roleDiv.textContent = `Role: ${role}`;
+		if (courseName) {
+		roleDiv.textContent += ` (${courseName})`;
+		}
+		// Make sure user-info is visible
+		document.getElementById("user-info").style.display = "block";
+	}
+	
+	// Call this after login completes
+	showUserRole();
 	</script>
   </header>
 
