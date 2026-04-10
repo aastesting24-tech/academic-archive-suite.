@@ -21,8 +21,13 @@
 		  <li><img id="user-pic" src="" alt="Profile Picture"></li>
 	      <div id="user-info" style="display:none;">
 			<p>User: <span id="user-name"></span></p>
-			<div id="user-role"></div>
-		    <p>Role: <span id="user-role"></span></p>
+		    <div id="user-role"></div>
+			<script>
+ 				setUserRole(drive, userEmail).then(() => {
+    			// Display the role
+    			document.getElementById("user-role").textContent = `Role: ${role}`;
+				});
+			</script>
 		    <button onclick="signOut()">Sign Out</button>
 	      </div>
 	    <script src="https://accounts.google.com/gsi/client" async defer></script>
