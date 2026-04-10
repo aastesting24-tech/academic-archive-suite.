@@ -202,3 +202,16 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+.login-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+#user-pic {
+    border-radius: 50%;
+    margin: 10px 0;
+}
