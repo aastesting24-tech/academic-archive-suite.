@@ -90,6 +90,48 @@ window.onload = function () {
     google.accounts.id.prompt(); 
 };
 
+let role = "Student"; // Default role
+let courseName = "";  // Will hold the course name if course admin
+
+async function setUserRole(drive, userEmail) {
+  const topFolderId = "13ifRtDs6cr7SrLSg16MNBv7-mlGqa3N6";
+  const courseFolders = {
+    "1sz62MIYhKBN4Dqzc3qpaSlHMZpvhochY":"MA_Economics",
+    "1NRzrClmJo2-KNOz1FNo86A5F_1AyVnu2":"MA_English",
+    "1ttN_PEksK7UFIGdWCmjrfGrpIjHwx2j7":"MA_Mathematics",
+	"1D5avoZ3v6tRfnS7FqGyocFf16O7P0koe":"MA_Political_Science",
+	"1hjh3nBu9ondUt9pwZatlu1i1DcrcjXJl":"MBA",
+	"1Rg6l_WJ6DzFfthoa16VMVRxB8orKxtwD":"MCA"
+  };
+
+  // Helper function to check write access
+  async function hasWriteAccess(folderId) {
+    const perms = await drive.permissions.list({ fileId: folderId });
+    const userPerm = perms.data.permissions.find(p => p.emailAddress === userEmail);
+    return userPerm && userPerm.role === "writer";
+  }
+
+  // Check top-level folder first
+  if (await hasWriteAccess(topFolderId)) {
+    role = "Super Admin";
+    courseName = "All Courses";
+    return;
+  }
+
+  // Check each course folder
+  for (const [folderId, name] of Object.entries(courseFolders)) {
+    if (await hasWriteAccess(folderId)) {
+      role = "Course Admin";
+      courseName = name;
+      return;
+    }
+  }
+
+  // Default remains Student
+  role = "Student";
+  courseName = "";
+}
+
 function signOut() {
 	userSignedIn = false;
     google.accounts.id.disableAutoSelect();
