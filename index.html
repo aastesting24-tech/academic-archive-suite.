@@ -22,7 +22,9 @@
 		<li>
 		<div id="user-info">
 			<p>User: <span id="user-name"></span></p>
-			<div id="user-role"></div>
+			<div id="user-role">
+				<p>User: <span id="role"></span></p>
+			</div>
 			<button onclick="signOut()">Sign Out</button>
 		</div>
 		</li>
@@ -31,24 +33,7 @@
 		<li><a href="#contact">Contact</a></li>
 	</ul>
 	</nav>
-	
 	<script src="https://accounts.google.com/gsi/client" async defer></script>
-	<script>
-	// Run after login is successful
-	async function showUserRole() {
-		await setUserRole(drive, userEmail);
-		const roleDiv = document.getElementById("user-role");
-		roleDiv.textContent = `Role: ${role}`;
-		if (courseName) {
-		roleDiv.textContent += ` (${courseName})`;
-		}
-		// Make sure user-info is visible
-		document.getElementById("user-info").style.display = "block";
-	}
-	
-	// Call this after login completes
-	showUserRole();
-	</script>
   </header>
 
   <!-- Hero Section -->
