@@ -6,8 +6,22 @@
   <title>Academic Archive Suite</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/png" href="logo.png">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+
+    <div class="login-container">
+     <h1>Welcome Back</h1>
+     <p>Please sign in to continue</p>
+     <div id="buttonDiv"></div>
+        <div id="user-info" style="display:none;">
+            <h3>Logged in as: <span id="user-name"></span></h3>
+            <img id="user-pic" src="" alt="Profile Picture">
+            <button onclick="signOut()">Sign Out</button>
+        </div>
+    </div>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+	
   <!-- Navigation Bar -->
   <header class="site-header">
     <div class="logo">
@@ -34,7 +48,7 @@
       <img src="books-cap.png" alt="Books, Graduation Cap, Diploma">
     </div>
   </section>
-
+  
   <!-- Courses Section -->
   <section id="courses" class="courses">
     <h2>Available Courses</h2>
