@@ -21,7 +21,17 @@
 		  <li><img id="user-pic" src="" alt="Profile Picture"></li>
 	      <div id="user-info" style="display:none;">
 			<p>User: <span id="user-name"></span></p>
-		    <p>Role: </h3><span id="user-name"></p>
+		    <div id="user-role"></div>
+				<div id="course-name"></div>
+				<script>
+  				setUserRole(drive, userEmail).then(() => {
+    			document.getElementById("user-role").textContent = `Role: ${role}`;
+    			if (courseName) {
+      				document.getElementById("course-name").textContent = `Course: ${courseName}`;
+   				}
+  				});
+				</script>
+			  	<p>Role: <span id="user-role"></span></p>
 		    <button onclick="signOut()">Sign Out</button>
 	      </div>
 	    <script src="https://accounts.google.com/gsi/client" async defer></script>
