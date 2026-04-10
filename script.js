@@ -89,4 +89,52 @@ function loadSemester(course, semester) {
     </div>
   `;
 }
+function handleCredentialResponse(response) {
+    // The response.credential is a JWT (JSON Web Token)
+    const responsePayload = decodeJwtResponse(response.credential);
 
+    console.log("ID: " + responsePayload.sub);
+    console.log('Full Name: ' + responsePayload.name);
+    console.log('Given Name: ' + responsePayload.given_name);
+    console.log('Family Name: ' + responsePayload.family_name);
+    console.log("Image URL: " + responsePayload.picture);
+    console.log("Email: " + responsePayload.email);
+
+    // Update UI
+    document.getElementById('buttonDiv').style.display = 'none';
+    document.getElementById('user-info').style.display = 'block';
+    document.getElementById('user-name').innerText = responsePayload.name;
+    document.getElementById('user-pic').src = responsePayload.picture;
+}
+
+// Simple function to decode the JWT token from Google
+function decodeJwtResponse(token) {
+    let base64Url = token.split('.')[1];
+    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
+
+window.onload = function () {
+    google.accounts.id.initialize({
+        client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
+        callback: handleCredentialResponse
+    });
+
+    // Renders the standard Google Sign-In button
+    google.accounts.id.renderButton(
+        document.getElementById("buttonDiv"),
+        { theme: "outline", size: "large" }  // Customization attributes
+    );
+
+    // Displays the One Tap prompt (Optional)
+    google.accounts.id.prompt(); 
+};
+
+function signOut() {
+    google.accounts.id.disableAutoSelect();
+    location.reload(); // Simple way to reset state for this demo
+}
