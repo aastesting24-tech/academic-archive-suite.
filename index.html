@@ -15,15 +15,15 @@
       <img src="logo.png" alt="University Logo">
       <span>Adikavi Nannaya University</span>
     </div>
+    	<div id="buttonDiv"></div>
+	  <div id="user-info" style="display:none;">
+		  <h3>Logged in as: <span id="user-name"></span></h3>
+		  <img id="user-pic" src="" alt="Profile Picture">
+		  <button onclick="signOut()">Sign Out</button>
+	  </div>
+	  <script src="https://accounts.google.com/gsi/client" async defer></script>
     <nav>
       <ul>
-        <div id="buttonDiv"></div>
-          <div id="user-info" style="display:none;">
-            <h3>Logged in as: <span id="user-name"></span></h3>
-            <img id="user-pic" src="" alt="Profile Picture">
-            <button onclick="signOut()">Sign Out</button>
-        </div>
-        <script src="https://accounts.google.com/gsi/client" async defer></script>
         <li><a href="#home" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">Home</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#about">Contact</a></li>
