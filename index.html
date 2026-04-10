@@ -15,27 +15,32 @@
       <img src="logo.png" alt="University Logo">
       <span>Adikavi Nannaya University</span>
     </div>
-    <nav>
-      <ul>
-		<div id="buttonDiv"></div>
-		  <li><img id="user-pic" src="" alt="Profile Picture"></li>
-	      <div id="user-info" style="display:none;">
-			<p>User: <span id="user-name"></span></p>
-		    <div id="user-role"></div>
-			<script>
- 				setUserRole(drive, userEmail).then(() => {
-    			// Display the role
-    			document.getElementById("user-role").textContent = `Role: ${role}`;
-				});
-			</script>
-		    <button onclick="signOut()">Sign Out</button>
-	      </div>
-	    <script src="https://accounts.google.com/gsi/client" async defer></script>
-        <li><a href="#home" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#about">Contact</a></li>
-      </ul>
-    </nav>
+	<nav>
+  	<ul>
+    	<li><div id="buttonDiv"></div></li>
+    	<li><img id="user-pic" src="" alt="Profile Picture"></li>
+    	<li>
+      	<div id="user-info" style="display:none;">
+        	<p>User: <span id="user-name"></span></p>
+        	<div id="user-role"></div>
+        	<button onclick="signOut()">Sign Out</button>
+      	</div>
+    	</li>
+    	<li><a href="#home" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">Home</a></li>
+    	<li><a href="#about">About</a></li>
+		<li><a href="#contact">Contact</a></li>
+  	</ul>
+	</nav>
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
+	<script>
+  	// Run after login
+  		setUserRole(drive, userEmail).then(() => {
+    	document.getElementById("user-role").textContent = `Role: ${role}`;
+    	if (courseName) {
+      	document.getElementById("user-role").textContent += ` (${courseName})`;
+    	}
+  	});
+	</script>
   </header>
 
   <!-- Hero Section -->
