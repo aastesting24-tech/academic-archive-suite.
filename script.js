@@ -91,18 +91,19 @@ window.onload = function () {
 };
 
 let role = "Student"; // Default role
+let courseName = ""; 
 
 async function setUserRole(drive, userEmail) {
   const topFolderId = "13ifRtDs6cr7SrLSg16MNBv7-mlGqa3N6";
-  const courseFolderIds = [
-    "1sz62MIYhKBN4Dqzc3qpaSlHMZpvhochY",
-    "1NRzrClmJo2-KNOz1FNo86A5F_1AyVnu2",
-    "1ttN_PEksK7UFIGdWCmjrfGrpIjHwx2j7",
-	"1D5avoZ3v6tRfnS7FqGyocFf16O7P0koe",
-	"1hjh3nBu9ondUt9pwZatlu1i1DcrcjXJl",
-	"1Rg6l_WJ6DzFfthoa16VMVRxB8orKxtwD"
+  const courseFolderIds = {
+    "1sz62MIYhKBN4Dqzc3qpaSlHMZpvhochY": "MA_Economics",
+    "1NRzrClmJo2-KNOz1FNo86A5F_1AyVnu2": "MA_English",
+    "1ttN_PEksK7UFIGdWCmjrfGrpIjHwx2j7": "MA_Mathematics",
+	"1D5avoZ3v6tRfnS7FqGyocFf16O7P0koe": "MA_Political_Science",
+	"1hjh3nBu9ondUt9pwZatlu1i1DcrcjXJl": "MBA",
+	"1Rg6l_WJ6DzFfthoa16VMVRxB8orKxtwD": "MCA"
     // Add more course folder IDs here
-  ];
+  };
 
   // Helper function to check write access
   async function hasWriteAccess(folderId) {
@@ -114,21 +115,23 @@ async function setUserRole(drive, userEmail) {
   // Check top-level folder first
   if (await hasWriteAccess(topFolderId)) {
     role = "Super Admin";
+    courseName = "All Courses"; // optional label
     return;
   }
 
-  // Check all course folders
-  for (const folderId of courseFolderIds) {
+  // Check each course folder
+  for (const [folderId, name] of Object.entries(courseFolders)) {
     if (await hasWriteAccess(folderId)) {
-      role = "Course Admin";
+      role = `${name} Admin`;   // <-- changed to Admin
+      courseName = name;
       return;
     }
   }
 
   // Default remains Student
   role = "Student";
+  courseName = "Default";
 }
-
 function signOut() {
 	userSignedIn = false;
     google.accounts.id.disableAutoSelect();
