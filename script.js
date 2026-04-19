@@ -63,7 +63,7 @@ function handleCredentialResponse(response) {
     document.getElementById('user-pic').src = responsePayload.picture;
 
 	//Call setUserRole with Drive client + user email
-    setUserRole(gapi.client.drive, payload.email);
+    setUserRole(gapi.client.drive, responsePayload.email);
 }
 
 // Simple function to decode the JWT token from Google
