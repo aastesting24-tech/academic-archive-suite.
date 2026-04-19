@@ -90,7 +90,19 @@ window.onload = function () {
     );
 
     // Displays the One Tap prompt (Optional)
-    google.accounts.id.prompt(); 
+    google.accounts.id.prompt();
+
+	// Initialize Drive API client
+    gapi.load("client:auth2", () => {
+    	gapi.client.init({
+        	apiKey: "AIzaSyCvTLuCmTsDTN4yKXDcYqlnoDu_bjWfr9A",
+    		clientId: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
+      		discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+      		scope: "https://www.googleapis.com/auth/drive"
+    	}).then(() => {
+      		console.log("Drive API initialized");
+    	});
+  	});
 };
 
 async function setUserRole(drive, userEmail) {
