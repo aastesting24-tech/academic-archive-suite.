@@ -101,17 +101,25 @@ window.onload = function () {
     		tokenClient = google.accounts.oauth2.initTokenClient({
         		client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
         		scope: "https://www.googleapis.com/auth/drive",
-        		callback: (tokenResponse) => {
-          			console.log("Access token:", tokenResponse.access_token);
-          			gapi.client.setToken({ access_token: tokenResponse.access_token });
-          			// Always call setUserRole here
-          			if (signedInEmail) {
-            			console.log("Calling setUserRole for:", signedInEmail);
-            			setUserRole(gapi.client.drive, signedInEmail);
-          			} else {
-            			console.warn("signedInEmail not set yet");
-          			}
-        		}
+        		callback: async (tokenResponse) => { // Added async here
+        			if (tokenResponse.error !== undefined) {
+            			throw (tokenResponse);
+        			}
+        			console.log("Access token acquired");
+        			gapi.client.setToken({ access_token: tokenResponse.access_token });
+
+        			// IMPORTANT: If handleCredentialResponse hasn't finished, 
+        			// we might need to get the email from the token info or wait.
+        			if (signedInEmail) {
+            			await setUserRole(gapi.client.drive, signedInEmail);
+        			} else {
+            			// Fallback: If email isn't set yet, wait a moment or retry
+            			console.warn("Email not found, retrying role check...");
+            			setTimeout(() => {
+                			if(signedInEmail) setUserRole(gapi.client.drive, signedInEmail);
+            			}, 1000);
+        			}
+    			}
       		});
     	});
   	});
