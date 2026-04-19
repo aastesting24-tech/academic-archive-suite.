@@ -102,19 +102,19 @@ window.onload = function () {
       		scope: "https://www.googleapis.com/auth/drive"
     	}).then(() => {
       		console.log("Drive API initialized");
-			//Request an access token for Drive
-      		const tokenClient = google.accounts.oauth2.initTokenClient({
+			// Create token client
+    		window.tokenClient = google.accounts.oauth2.initTokenClient({
         		client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
         		scope: "https://www.googleapis.com/auth/drive",
         		callback: (tokenResponse) => {
-          		console.log("Access token:", tokenResponse.access_token);
-          		// Attach token to gapi client
-          		gapi.client.setToken({ access_token: tokenResponse.access_token });
+          			console.log("Access token:", tokenResponse.access_token);
+          			gapi.client.setToken({ access_token: tokenResponse.access_token });
+          			//Now safe to call setUserRole
+          			if (window.signedInEmail) {
+            		setUserRole(gapi.client.drive, window.signedInEmail);
+          			}
         		}
       		});
-
-      		// Request token immediately after init
-      		tokenClient.requestAccessToken();
     	});
   	});
 };
