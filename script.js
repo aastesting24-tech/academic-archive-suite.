@@ -114,6 +114,7 @@ window.onload = function () {
                 
                 // Ensure email is available from handleCredentialResponse
                 if (signedInEmail) {
+					console.log("Calling setUserRole function");
                     await setUserRole(signedInEmail);
                 }
             }
