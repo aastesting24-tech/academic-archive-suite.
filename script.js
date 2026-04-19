@@ -81,8 +81,7 @@ window.onload = function () {
     google.accounts.id.initialize({
         client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
         callback: handleCredentialResponse,
-		auto_select: true,
-		scope: "https://www.googleapis.com/auth/drive"
+		auto_select: true
     });
 
     // Renders the standard Google Sign-In button
@@ -91,7 +90,7 @@ window.onload = function () {
         { theme: "outline", size: "large" }  // Customization attributes
     );
 
-    // Displays the One Tap prompt (Optional)
+	// Displays the One Tap prompt (Optional)
     google.accounts.id.prompt();
 
 	// Initialize Drive API client
@@ -103,6 +102,19 @@ window.onload = function () {
       		scope: "https://www.googleapis.com/auth/drive"
     	}).then(() => {
       		console.log("Drive API initialized");
+			//Request an access token for Drive
+      		const tokenClient = google.accounts.oauth2.initTokenClient({
+        		client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
+        		scope: "https://www.googleapis.com/auth/drive",
+        		callback: (tokenResponse) => {
+          		console.log("Access token:", tokenResponse.access_token);
+          		// Attach token to gapi client
+          		gapi.client.setToken({ access_token: tokenResponse.access_token });
+        		}
+      		});
+
+      		// Request token immediately after init
+      		tokenClient.requestAccessToken();
     	});
   	});
 };
