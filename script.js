@@ -44,10 +44,14 @@ const courseData = {
 };
 
 let userSignedIn = false;
+let signedInEmail = null;
+let tokenClient = null;
+
 function handleCredentialResponse(response) {
     // The response.credential is a JWT (JSON Web Token)
     const responsePayload = decodeJwtResponse(response.credential);
 	userSignedIn = true;
+	signedInEmail = responsePayload.email;
 
     console.log("ID: " + responsePayload.sub);
     console.log('Full Name: ' + responsePayload.name);
@@ -62,12 +66,9 @@ function handleCredentialResponse(response) {
     document.getElementById('user-name').innerText = responsePayload.name;
     document.getElementById('user-pic').src = responsePayload.picture;
 
-	// Save email globally
-  	window.signedInEmail = responsePayload.email;
-
   	// Request token after sign-in
-  	if (window.tokenClient) {
-    	window.tokenClient.requestAccessToken();
+  	if (tokenClient) {
+    	tokenClient.requestAccessToken();
   	}
 }
 
@@ -97,14 +98,19 @@ window.onload = function () {
     	}).then(() => {
       		console.log("Drive API initialized");
 			// Create token client
-    		window.tokenClient = google.accounts.oauth2.initTokenClient({
+    		tokenClient = google.accounts.oauth2.initTokenClient({
         		client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
         		scope: "https://www.googleapis.com/auth/drive",
         		callback: (tokenResponse) => {
           			console.log("Access token:", tokenResponse.access_token);
           			gapi.client.setToken({ access_token: tokenResponse.access_token });
           			// Always call setUserRole here
-          			setUserRole(gapi.client.drive, window.signedInEmail);
+          			if (signedInEmail) {
+            			console.log("Calling setUserRole for:", signedInEmail);
+            			setUserRole(gapi.client.drive, signedInEmail);
+          			} else {
+            			console.warn("signedInEmail not set yet");
+          			}
         		}
       		});
     	});
