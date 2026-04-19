@@ -140,15 +140,15 @@ async function setUserRole(drive, userEmail) {
   	try {
     	const perms = await drive.permissions.list({
       	fileId: folderId,
-      	supportsAllDrives: true,   // important for shared drives
-      	fields: "permissions(emailAddress,role)" // limit fields for clarity
+      	supportsAllDrives: true,
+      	fields: "permissions(emailAddress,role)"
     	});
     	console.log("Permissions for folder", folderId, perms.result.permissions);
-
     	const userPerm = perms.result.permissions?.find(p => p.emailAddress === userEmail);
     	return userPerm && ["writer","owner","organizer"].includes(userPerm.role);
   	} catch (err) {
     	console.error("Drive API error for folder", folderId, err);
+    	alert("Error checking folder " + folderId + ": " + err.message);
     	return false;
   	}
   }
