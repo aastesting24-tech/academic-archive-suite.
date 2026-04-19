@@ -106,7 +106,7 @@ function handleCredentialResponse(response) {
     document.getElementById('user-pic').src = responsePayload.picture;
 
 	// Save email globally
-  	window.signedInEmail = payload.email;
+  	window.signedInEmail = responsePayload.email;
 
   	// Request token after sign-in
   	if (window.tokenClient) {
