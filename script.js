@@ -137,9 +137,20 @@ async function setUserRole(drive, userEmail) {
   };
 
   async function hasWriteAccess(folderId) {
-    const perms = await drive.permissions.list({ fileId: folderId });
-    const userPerm = perms.result.permissions.find(p => p.emailAddress === userEmail);
-    return userPerm && ["writer","owner","organizer"].includes(userPerm.role);
+  	try {
+    	const perms = await drive.permissions.list({
+      	fileId: folderId,
+      	supportsAllDrives: true,   // important for shared drives
+      	fields: "permissions(emailAddress,role)" // limit fields for clarity
+    	});
+    	console.log("Permissions for folder", folderId, perms.result.permissions);
+
+    	const userPerm = perms.result.permissions?.find(p => p.emailAddress === userEmail);
+    	return userPerm && ["writer","owner","organizer"].includes(userPerm.role);
+  	} catch (err) {
+    	console.error("Drive API error for folder", folderId, err);
+    	return false;
+  	}
   }
 
   let role = "Student";
@@ -165,6 +176,7 @@ async function setUserRole(drive, userEmail) {
 
   // Update UI
   document.getElementById("role-display").innerText = role;
+  alert("Computed role: " + role);
  }
 
 function signOut() {
