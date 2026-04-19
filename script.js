@@ -43,6 +43,34 @@ const courseData = {
   }
 };
 
+let userSignedIn = false;
+function handleCredentialResponse(response) {
+    // The response.credential is a JWT (JSON Web Token)
+    const responsePayload = decodeJwtResponse(response.credential);
+	userSignedIn = true;
+
+    console.log("ID: " + responsePayload.sub);
+    console.log('Full Name: ' + responsePayload.name);
+    console.log('Given Name: ' + responsePayload.given_name);
+    console.log('Family Name: ' + responsePayload.family_name);
+    console.log("Image URL: " + responsePayload.picture);
+    console.log("Email: " + responsePayload.email);
+
+    // Update UI
+    document.getElementById('buttonDiv').style.display = 'none';
+    document.getElementById('user-info').style.display = 'block';
+    document.getElementById('user-name').innerText = responsePayload.name;
+    document.getElementById('user-pic').src = responsePayload.picture;
+
+	// Save email globally
+  	window.signedInEmail = responsePayload.email;
+
+  	// Request token after sign-in
+  	if (window.tokenClient) {
+    	window.tokenClient.requestAccessToken();
+  	}
+}
+
 window.onload = function () {
     google.accounts.id.initialize({
         client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
@@ -75,10 +103,8 @@ window.onload = function () {
         		callback: (tokenResponse) => {
           			console.log("Access token:", tokenResponse.access_token);
           			gapi.client.setToken({ access_token: tokenResponse.access_token });
-          			//Now safe to call setUserRole
-          			if (window.signedInEmail) {
-            		setUserRole(gapi.client.drive, window.signedInEmail);
-          			}
+          			// Always call setUserRole here
+          			setUserRole(gapi.client.drive, window.signedInEmail);
         		}
       		});
     	});
