@@ -72,6 +72,17 @@ function handleCredentialResponse(response) {
   	}
 }
 
+// Simple function to decode the JWT token from Google
+function decodeJwtResponse(token) {
+    let base64Url = token.split('.')[1];
+    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
+
 window.onload = function () {
     google.accounts.id.initialize({
         client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
@@ -85,58 +96,32 @@ window.onload = function () {
         { theme: "outline", size: "large" }  // Customization attributes
     );
 
-	// Displays the One Tap prompt (Optional)
-    google.accounts.id.prompt();
-
 	// Initialize Drive API client
-    gapi.load("client:auth2", () => {
-    	gapi.client.init({
-        	apiKey: "AIzaSyCvTLuCmTsDTN4yKXDcYqlnoDu_bjWfr9A",
-    		clientId: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
-      		discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-      		scope: "https://www.googleapis.com/auth/drive"
-    	}).then(() => {
-      		console.log("Drive API initialized");
-			// Create token client
-    		tokenClient = google.accounts.oauth2.initTokenClient({
-        		client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
-        		scope: "https://www.googleapis.com/auth/drive",
-        		callback: async (tokenResponse) => { // Added async here
-        			if (tokenResponse.error !== undefined) {
-            			throw (tokenResponse);
-        			}
-        			console.log("Access token acquired");
-        			gapi.client.setToken({ access_token: tokenResponse.access_token });
-
-        			// IMPORTANT: If handleCredentialResponse hasn't finished, 
-        			// we might need to get the email from the token info or wait.
-        			if (signedInEmail) {
-            			await setUserRole(gapi.client.drive, signedInEmail);
-        			} else {
-            			// Fallback: If email isn't set yet, wait a moment or retry
-            			console.warn("Email not found, retrying role check...");
-            			setTimeout(() => {
-                			if(signedInEmail) setUserRole(gapi.client.drive, signedInEmail);
-            			}, 1000);
-        			}
-    			}
-      		});
-    	});
+    gapi.load("client", async() => {
+    	await gapi.client.init({
+            apiKey: "AIzaSyCvTLuCmTsDTN4yKXDcYqlnoDu_bjWfr9A",
+            discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+        });
+        console.log("Drive API client loaded");
+		// Create token client
+    	tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
+            scope: "https://www.googleapis.com/auth/drive.metadata.readonly", // Better scope for checking roles
+            callback: async (tokenResponse) => {
+                if (tokenResponse.error !== undefined) throw (tokenResponse);
+                
+                gapi.client.setToken({ access_token: tokenResponse.access_token });
+                
+                // Ensure email is available from handleCredentialResponse
+                if (signedInEmail) {
+                    await setUserRole(signedInEmail);
+                }
+            }
+		});
   	});
 };
 
-// Simple function to decode the JWT token from Google
-function decodeJwtResponse(token) {
-    let base64Url = token.split('.')[1];
-    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-
-    return JSON.parse(jsonPayload);
-}
-
-async function setUserRole(drive, userEmail) {
+async function setUserRole(userEmail) {
   const topFolderId = "13ifRtDs6cr7SrLSg16MNBv7-mlGqa3N6";
   const courseFolderIds = {
     "1sz62MIYhKBN4Dqzc3qpaSlHMZpvhochY": "MA_Economics",
@@ -149,20 +134,20 @@ async function setUserRole(drive, userEmail) {
 
   async function hasWriteAccess(folderId) {
   	try {
-    	const perms = await drive.permissions.list({
+    	const response = await gapi.client.drive.permissions.list({
       	fileId: folderId,
       	supportsAllDrives: true,
       	fields: "permissions(emailAddress,role)"
     	});
-    	console.log("Permissions for folder", folderId, perms.result.permissions);
-    	const userPerm = perms.result.permissions?.find(p => p.emailAddress === userEmail);
-    	return userPerm && ["writer","owner","organizer"].includes(userPerm.role);
-  	} catch (err) {
-    	console.error("Drive API error for folder", folderId, err);
-    	alert("Error checking folder " + folderId + ": " + err.message);
-    	return false;
-  	}
-  }
+    	const perms = response.result.permissions || [];
+            // Check if user's email is explicitly listed with write permissions
+            const userPerm = perms.find(p => p.emailAddress?.toLowerCase() === userEmail.toLowerCase());
+            return userPerm && ["writer", "owner", "organizer", "fileOrganizer"].includes(userPerm.role);
+        } catch (err) {
+            console.error("Access check failed for " + folderId, err);
+            return false;
+        }
+    }
 
   let role = "Student";
   let adminFolders = [];
@@ -185,9 +170,11 @@ async function setUserRole(drive, userEmail) {
     }
   }
 
-  // Update UI
-  document.getElementById("role-display").innerText = role;
-  alert("Computed role: " + role);
+  // Update the UI
+    const displayElement = document.getElementById("role-display");
+    if (displayElement) {
+        displayElement.innerText = role;
+    }
  }
 
 function signOut() {
