@@ -80,7 +80,9 @@ function decodeJwtResponse(token) {
 window.onload = function () {
     google.accounts.id.initialize({
         client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
-        callback: handleCredentialResponse
+        callback: handleCredentialResponse,
+		auto_select: true,
+		scope: "https://www.googleapis.com/auth/drive"
     });
 
     // Renders the standard Google Sign-In button
