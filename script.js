@@ -90,48 +90,48 @@ window.onload = function () {
     google.accounts.id.prompt(); 
 };
 
-let role = "Student"; // Default role
-let courseName = ""; 
-
 async function setUserRole(drive, userEmail) {
   const topFolderId = "13ifRtDs6cr7SrLSg16MNBv7-mlGqa3N6";
   const courseFolderIds = {
     "1sz62MIYhKBN4Dqzc3qpaSlHMZpvhochY": "MA_Economics",
     "1NRzrClmJo2-KNOz1FNo86A5F_1AyVnu2": "MA_English",
     "1ttN_PEksK7UFIGdWCmjrfGrpIjHwx2j7": "MA_Mathematics",
-	"1D5avoZ3v6tRfnS7FqGyocFf16O7P0koe": "MA_Political_Science",
-	"1hjh3nBu9ondUt9pwZatlu1i1DcrcjXJl": "MBA",
-	"1Rg6l_WJ6DzFfthoa16VMVRxB8orKxtwD": "MCA"
-    // Add more course folder IDs here
+    "1D5avoZ3v6tRfnS7FqGyocFf16O7P0koe": "MA_Political_Science",
+    "1hjh3nBu9ondUt9pwZatlu1i1DcrcjXJl": "MBA",
+    "1Rg6l_WJ6DzFfthoa16VMVRxB8orKxtwD": "MCA"
   };
 
-  // Helper function to check write access
   async function hasWriteAccess(folderId) {
     const perms = await drive.permissions.list({ fileId: folderId });
-    const userPerm = perms.data.permissions.find(p => p.emailAddress === userEmail);
-    return userPerm && userPerm.role === "writer";
+    const userPerm = perms.result.permissions.find(p => p.emailAddress === userEmail);
+    return userPerm && ["writer","owner","organizer"].includes(userPerm.role);
   }
 
-  // Check top-level folder first
+  let role = "Student";
+  let adminFolders = [];
+
+  // Super Admin check
   if (await hasWriteAccess(topFolderId)) {
     role = "Super Admin";
-    courseName = "All Courses"; // optional label
-    return;
-  }
+  } else {
+    // Collect all course folders with write access
+    for (const [folderId, name] of Object.entries(courseFolderIds)) {
+      if (await hasWriteAccess(folderId)) {
+        adminFolders.push(name);
+      }
+    }
 
-  // Check each course folder
-  for (const [folderId, name] of Object.entries(courseFolders)) {
-    if (await hasWriteAccess(folderId)) {
-      role = `${name} Admin`;   // <-- changed to Admin
-      courseName = name;
-      return;
+    if (adminFolders.length >= 2) {
+      role = adminFolders.join("|") + " admin";
+    } else if (adminFolders.length === 1) {
+      role = adminFolders[0] + " admin";
     }
   }
 
-  // Default remains Student
-  role = "Student";
-  courseName = "Default";
-}
+  // Update UI
+  document.getElementById("role-display").innerText = role;
+ }
+
 function signOut() {
 	userSignedIn = false;
     google.accounts.id.disableAutoSelect();
