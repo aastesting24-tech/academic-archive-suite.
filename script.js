@@ -42,40 +42,6 @@ const courseData = {
     "Project": "1sUTnkdlWbe8MMuqrjTlpWhEYHzzdfXY8"
   }
 };
-let userSignedIn = false;
-
-function handleCredentialResponse(response) {
-    // The response.credential is a JWT (JSON Web Token)
-    const responsePayload = decodeJwtResponse(response.credential);
-	userSignedIn = true;
-
-    console.log("ID: " + responsePayload.sub);
-    console.log('Full Name: ' + responsePayload.name);
-    console.log('Given Name: ' + responsePayload.given_name);
-    console.log('Family Name: ' + responsePayload.family_name);
-    console.log("Image URL: " + responsePayload.picture);
-    console.log("Email: " + responsePayload.email);
-
-    // Update UI
-    document.getElementById('buttonDiv').style.display = 'none';
-    document.getElementById('user-info').style.display = 'block';
-    document.getElementById('user-name').innerText = responsePayload.name;
-    document.getElementById('user-pic').src = responsePayload.picture;
-
-	//Call setUserRole with Drive client + user email
-    setUserRole(gapi.client.drive, responsePayload.email);
-}
-
-// Simple function to decode the JWT token from Google
-function decodeJwtResponse(token) {
-    let base64Url = token.split('.')[1];
-    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-
-    return JSON.parse(jsonPayload);
-}
 
 window.onload = function () {
     google.accounts.id.initialize({
@@ -118,6 +84,46 @@ window.onload = function () {
     	});
   	});
 };
+
+let userSignedIn = false;
+
+function handleCredentialResponse(response) {
+    // The response.credential is a JWT (JSON Web Token)
+    const responsePayload = decodeJwtResponse(response.credential);
+	userSignedIn = true;
+
+    console.log("ID: " + responsePayload.sub);
+    console.log('Full Name: ' + responsePayload.name);
+    console.log('Given Name: ' + responsePayload.given_name);
+    console.log('Family Name: ' + responsePayload.family_name);
+    console.log("Image URL: " + responsePayload.picture);
+    console.log("Email: " + responsePayload.email);
+
+    // Update UI
+    document.getElementById('buttonDiv').style.display = 'none';
+    document.getElementById('user-info').style.display = 'block';
+    document.getElementById('user-name').innerText = responsePayload.name;
+    document.getElementById('user-pic').src = responsePayload.picture;
+
+	// Save email globally
+  	window.signedInEmail = payload.email;
+
+  	// Request token after sign-in
+  	if (window.tokenClient) {
+    	window.tokenClient.requestAccessToken();
+  	}
+}
+
+// Simple function to decode the JWT token from Google
+function decodeJwtResponse(token) {
+    let base64Url = token.split('.')[1];
+    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
 
 async function setUserRole(drive, userEmail) {
   const topFolderId = "13ifRtDs6cr7SrLSg16MNBv7-mlGqa3N6";
