@@ -67,18 +67,17 @@ function handleCredentialResponse(response) {
     // Immediate default
     roleSpan.innerText = "Checking...";
 
-    google.script.run.withSuccessHandler(function(verifiedRole) {
-		roleSpan.innerText = verifiedRole;
-        // Add a little color logic
-        if (verifiedRole === "Super Admin") {
-        	roleSpan.style.color = "gold";
-        } else if (verifiedRole.includes("|") || verifiedRole.includes("Admin")) {
-            roleSpan.style.color = "red";
-        } else {
-            roleSpan.style.color = "black";
-        }
-    })
-    .getUserRole(email);
+    // Check if we are actually inside Google environment
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+            .withSuccessHandler(function(verifiedRole) {
+                roleSpan.innerText = verifiedRole;
+            })
+            .getUserRole(email);
+    } else {
+        console.warn("Google Apps Script context not found. Defaulting to Student.");
+        roleSpan.innerText = "Student (Local Preview)";
+    }
 }
 
 // Simple function to decode the JWT token from Google
