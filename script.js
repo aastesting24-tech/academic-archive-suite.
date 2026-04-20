@@ -48,6 +48,10 @@ let signedInEmail = null;
 let tokenClient = null;
 let gapiInitialized = false;
 
+function gapiLoaded() {
+    initializeGapiClient();
+}
+
 function initializeGapiClient() {
     gapi.load('client', async () => {
         try {
@@ -114,45 +118,29 @@ window.onload = function () {
 
 	// Initialize Drive API client
     gapi.load("client", async() => {
-    	await gapi.client.init({
-            apiKey: "AIzaSyCvTLuCmTsDTN4yKXDcYqlnoDu_bjWfr9A",
-            discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-        });
-        console.log("Drive API client loaded");
-		tokenClient = google.accounts.oauth2.initTokenClient({
-    		client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
-    		scope: "https://www.googleapis.com/auth/drive.metadata.readonly",
-    		callback: async (tokenResponse) => {
-        		if (tokenResponse.error !== undefined) {
-            		console.error("Token Error:", tokenResponse.error);
-            		throw tokenResponse;
-        		}
-				// 1. Set the token
-        		gapi.client.setToken({ access_token: tokenResponse.access_token });
-        		console.log("Access token set.");
-        		// 2. Safety Check: Wait for GAPI initialization if it's slow
-        		if (!gapiInitialized) {
-            		console.warn("GAPI not ready, waiting...");
-            		await new Promise(resolve => {
-                		const interval = setInterval(() => {
-                    		if (gapiInitialized) {
-                        		clearInterval(interval);
-                        		resolve();
-                    		}
-                		}, 100);
-            		});
-        		}
-				// 3. Safety Check: Ensure Email is captured
-        		if (signedInEmail) {
-            		console.log("Calling setUserRole for:", signedInEmail);
-            		await setUserRole(signedInEmail);
-        		} else {
-            		// Attempt to get email from the JWT if signedInEmail is lost
-            		console.error("signedInEmail is missing. Ensure handleCredentialResponse runs first.");
-        		}
-    		}
-		});
-  	});
+		try{
+    		await gapi.client.init({
+            	apiKey: "AIzaSyCvTLuCmTsDTN4yKXDcYqlnoDu_bjWfr9A",
+            	discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+        	});
+			gapiInitialized = true;
+        	console.log("Drive API client loaded");
+			tokenClient = google.accounts.oauth2.initTokenClient({
+    			client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
+    			scope: "https://www.googleapis.com/auth/drive.metadata.readonly",
+    			callback: async (tokenResponse) => {
+        			if (tokenResponse.error !== undefined) throw tokenResponse;
+        			gapi.client.setToken({ access_token: tokenResponse.access_token });
+        		
+        			if (signedInEmail) {
+            			await setUserRole(signedInEmail);
+					}
+    			}
+			});
+		} catch (err) {
+			console.error("Initialization failed", err);
+		}
+	});
 };
 
 async function setUserRole(userEmail) {
