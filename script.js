@@ -68,18 +68,17 @@ function handleCredentialResponse(response) {
     roleSpan.innerText = "Checking...";
 
     google.script.run.withSuccessHandler(function(verifiedRole) {
-            roleSpan.innerText = verifiedRole;
-            
-            // Add a little color logic
-            if (verifiedRole === "Super Admin") {
-                roleSpan.style.color = "gold";
-            } else if (verifiedRole.includes("|") || verifiedRole.includes("Admin")) {
-                roleSpan.style.color = "red";
-            } else {
-                roleSpan.style.color = "black";
-            }
-        })
-        .getUserRole(email);
+		roleSpan.innerText = verifiedRole;
+        // Add a little color logic
+        if (verifiedRole === "Super Admin") {
+        	roleSpan.style.color = "gold";
+        } else if (verifiedRole.includes("|") || verifiedRole.includes("Admin")) {
+            roleSpan.style.color = "red";
+        } else {
+            roleSpan.style.color = "black";
+        }
+    })
+    .getUserRole(email);
 }
 
 // Simple function to decode the JWT token from Google
