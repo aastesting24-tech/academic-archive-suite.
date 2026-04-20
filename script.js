@@ -67,8 +67,7 @@ function handleCredentialResponse(response) {
     // Immediate default
     roleSpan.innerText = "Checking...";
 
-    google.script.run
-        .withSuccessHandler(function(verifiedRole) {
+    google.script.run.withSuccessHandler(function(verifiedRole) {
             roleSpan.innerText = verifiedRole;
             
             // Add a little color logic
