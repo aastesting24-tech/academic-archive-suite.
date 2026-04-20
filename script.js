@@ -42,36 +42,12 @@ const courseData = {
     "Project": "1sUTnkdlWbe8MMuqrjTlpWhEYHzzdfXY8"
   }
 };
-
 let userSignedIn = false;
-let signedInEmail = null;
-let tokenClient = null;
-let gapiInitialized = false;
-
-function gapiLoaded() {
-    initializeGapiClient();
-}
-
-function initializeGapiClient() {
-    gapi.load('client', async () => {
-        try {
-            await gapi.client.init({
-                apiKey: "AIzaSyCvTLuCmTsDTN4yKXDcYqlnoDu_bjWfr9A",
-                discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-            });
-            gapiInitialized = true;
-            console.log("GAPI client initialized");
-        } catch (error) {
-            console.error("Error initializing GAPI:", error);
-        }
-    });
-}
 
 function handleCredentialResponse(response) {
     // The response.credential is a JWT (JSON Web Token)
     const responsePayload = decodeJwtResponse(response.credential);
 	userSignedIn = true;
-	signedInEmail = responsePayload.email;
 
     console.log("ID: " + responsePayload.sub);
     console.log('Full Name: ' + responsePayload.name);
@@ -85,12 +61,6 @@ function handleCredentialResponse(response) {
     document.getElementById('user-info').style.display = 'block';
     document.getElementById('user-name').innerText = responsePayload.name;
     document.getElementById('user-pic').src = responsePayload.picture;
-
-  	// AUTO-TRIGGER the second part (Drive Access)
-    if (tokenClient) {
-        // This will open the second popup immediately after sign-in
-        tokenClient.requestAccessToken({ prompt: 'consent' }); 
-    }
 }
 
 // Simple function to decode the JWT token from Google
@@ -107,8 +77,7 @@ function decodeJwtResponse(token) {
 window.onload = function () {
     google.accounts.id.initialize({
         client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
-        callback: handleCredentialResponse,
-		auto_select: true
+        callback: handleCredentialResponse
     });
 
     // Renders the standard Google Sign-In button
@@ -117,88 +86,9 @@ window.onload = function () {
         { theme: "outline", size: "large" }  // Customization attributes
     );
 
-	// Initialize Drive API client
-    gapi.load("client", async() => {
-		try{
-    		await gapi.client.init({
-            	apiKey: "AIzaSyCvTLuCmTsDTN4yKXDcYqlnoDu_bjWfr9A",
-            	discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-        	});
-			gapiInitialized = true;
-        	console.log("Drive API client loaded");
-			tokenClient = google.accounts.oauth2.initTokenClient({
-    			client_id: "160729259266-ed2isrqtng3799re2p9vpah3rosar6e3.apps.googleusercontent.com",
-    			scope: "https://www.googleapis.com/auth/drive.metadata.readonly",
-    			callback: async (tokenResponse) => {
-        			if (tokenResponse.error !== undefined) throw tokenResponse;
-        			gapi.client.setToken({ access_token: tokenResponse.access_token });
-        		
-        			if (signedInEmail) {
-            			await setUserRole(signedInEmail);
-					}
-    			}
-			});
-		} catch (err) {
-			console.error("Initialization failed", err);
-		}
-	});
+    // Displays the One Tap prompt (Optional)
+    google.accounts.id.prompt(); 
 };
-
-async function setUserRole(userEmail) {
-  const topFolderId = "13ifRtDs6cr7SrLSg16MNBv7-mlGqa3N6";
-  const courseFolderIds = {
-    "1sz62MIYhKBN4Dqzc3qpaSlHMZpvhochY": "MA_Economics",
-    "1NRzrClmJo2-KNOz1FNo86A5F_1AyVnu2": "MA_English",
-    "1ttN_PEksK7UFIGdWCmjrfGrpIjHwx2j7": "MA_Mathematics",
-    "1D5avoZ3v6tRfnS7FqGyocFf16O7P0koe": "MA_Political_Science",
-    "1hjh3nBu9ondUt9pwZatlu1i1DcrcjXJl": "MBA",
-    "1Rg6l_WJ6DzFfthoa16VMVRxB8orKxtwD": "MCA"
-  };
-
-  async function hasWriteAccess(folderId) {
-  	try {
-    	const response = await gapi.client.drive.permissions.list({
-      	fileId: folderId,
-      	supportsAllDrives: true,
-      	fields: "permissions(emailAddress,role)"
-    	});
-    	const perms = response.result.permissions || [];
-            // Check if user's email is explicitly listed with write permissions
-            const userPerm = perms.find(p => p.emailAddress?.toLowerCase() === userEmail.toLowerCase());
-            return userPerm && ["writer", "owner", "organizer", "fileOrganizer"].includes(userPerm.role);
-        } catch (err) {
-            console.error("Access check failed for " + folderId, err);
-            return false;
-        }
-    }
-
-  let role = "Student";
-  let adminFolders = [];
-
-  // Super Admin check
-  if (await hasWriteAccess(topFolderId)) {
-    role = "Super Admin";
-  } else {
-    // Collect all course folders with write access
-    for (const [folderId, name] of Object.entries(courseFolderIds)) {
-      if (await hasWriteAccess(folderId)) {
-        adminFolders.push(name);
-      }
-    }
-
-    if (adminFolders.length >= 2) {
-      role = adminFolders.join("|") + " admin";
-    } else if (adminFolders.length === 1) {
-      role = adminFolders[0] + " admin";
-    }
-  }
-
-  // Update the UI
-    const displayElement = document.getElementById("role-display");
-    if (displayElement) {
-        displayElement.innerText = role;
-    }
- }
 
 function signOut() {
 	userSignedIn = false;
