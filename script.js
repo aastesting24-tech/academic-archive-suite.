@@ -86,10 +86,11 @@ function handleCredentialResponse(response) {
     document.getElementById('user-name').innerText = responsePayload.name;
     document.getElementById('user-pic').src = responsePayload.picture;
 
-  	// Request token after sign-in
-  	if (tokenClient) {
-    	tokenClient.requestAccessToken();
-  	}
+  	// AUTO-TRIGGER the second part (Drive Access)
+    if (tokenClient) {
+        // This will open the second popup immediately after sign-in
+        tokenClient.requestAccessToken({ prompt: 'consent' }); 
+    }
 }
 
 // Simple function to decode the JWT token from Google
