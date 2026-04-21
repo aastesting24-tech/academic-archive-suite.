@@ -48,7 +48,10 @@ function handleCredentialResponse(response) {
     // The response.credential is a JWT (JSON Web Token)
     const responsePayload = decodeJwtResponse(response.credential);
 	userSignedIn = true;
-
+	
+	// FIX: Define email from the payload
+	const email = responsePayload.email;
+	
     console.log("ID: " + responsePayload.sub);
     console.log('Full Name: ' + responsePayload.name);
     console.log('Given Name: ' + responsePayload.given_name);
@@ -63,20 +66,29 @@ function handleCredentialResponse(response) {
     document.getElementById('user-pic').src = responsePayload.picture;
 
 	const roleSpan = document.getElementById("role-display");
-
-    // Immediate default
-    roleSpan.innerText = "Checking...";
-
-    // Check if we are actually inside Google environment
-    if (typeof google !== 'undefined' && google.script && google.script.run) {
+	roleSpan.innerText = "Verifying Role...";
+	
+    // Bridge to Code.gs
+    if (typeof google !== 'undefined' && google.script) {
         google.script.run
             .withSuccessHandler(function(verifiedRole) {
+                userRole = verifiedRole; // Store it globally
                 roleSpan.innerText = verifiedRole;
+                
+                // Optional: Highlight Admin roles
+                if (verifiedRole !== "Student") {
+                  roleSpan.style.color = "red";
+                  roleSpan.style.fontWeight = "bold";
+                }
+            })
+            .withFailureHandler(function(err) {
+                console.error("Role check failed:", err);
+                roleSpan.innerText = "Student";
             })
             .getUserRole(email);
     } else {
-        console.warn("Google Apps Script context not found. Defaulting to Student.");
-        roleSpan.innerText = "Student (Local Preview)";
+        // This will only show if you are testing locally in VS Code
+        roleSpan.innerText = "Student (Default)";
     }
 }
 
