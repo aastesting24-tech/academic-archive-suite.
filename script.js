@@ -67,28 +67,54 @@ function handleCredentialResponse(response) {
 
 	const roleSpan = document.getElementById("role-display");
 	roleSpan.innerText = "Verifying Role...";
-	
-    // Bridge to Code.gs
-    if (typeof google !== 'undefined' && google.script) {
-        google.script.run
-            .withSuccessHandler(function(verifiedRole) {
-                userRole = verifiedRole; // Store it globally
-                roleSpan.innerText = verifiedRole;
-                
-                // Optional: Highlight Admin roles
-                if (verifiedRole !== "Student") {
-                  roleSpan.style.color = "red";
-                  roleSpan.style.fontWeight = "bold";
-                }
-            })
-            .withFailureHandler(function(err) {
-                console.error("Role check failed:", err);
-                roleSpan.innerText = "Student";
-            })
-            .getUserRole(email);
-    } else {
-        // This will only show if you are testing locally in VS Code
-        roleSpan.innerText = "Student (Default)";
+
+	const SHEET_ID = "1i8w-_jRwhOmjNxflLmqN80m8tPwDFUcJ2dON9yyywkQ";   // e.g. 1i8w-_jRwhOmjNxflLmqN80m8tPwDFUcJ2dON9yyywkQ
+    const SHEET_NAME = "AccessApproval";        // must match tab name exactly
+    const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
+
+    async function checkEmail() {
+      const email = document.getElementById("emailInput").value.trim().toLowerCase();
+      if (!email) {
+        alert("Please enter an email");
+        return;
+      }
+
+      try {
+        const res = await fetch(URL);
+        const text = await res.text();
+
+        // Strip JSONP wrapper
+        const json = JSON.parse(text.substring(47, text.length - 2));
+        const rows = json.table.rows;
+
+        // First row = headers (folder names)
+        const headers = rows[0].c.map((cell, idx) =>
+          cell && cell.v ? cell.v.toString().trim() : `Column${idx+1}`
+        );
+
+        let foundFolders = [];
+
+        // Start from row 1 (skip header row)
+        for (let row = 1; row < rows.length; row++) {
+          rows[row].c.forEach((cell, colIndex) => {
+            if (cell && cell.v) {
+              const cellValue = cell.v.toString().trim().toLowerCase();
+              if (cellValue === email) {
+                foundFolders.push(headers[colIndex]);
+              }
+            }
+          });
+        }
+
+        document.getElementById("result").innerText =
+          foundFolders.length > 0
+            ? `${foundFolders.join("|")} admin`
+            : `Student (default)`;
+
+      } catch (err) {
+        console.error("Error:", err);
+        document.getElementById("result").innerText = "Error fetching data.";
+      }
     }
 }
 
