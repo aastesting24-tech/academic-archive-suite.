@@ -43,60 +43,72 @@ const courseData = {
   }
 };
 let userSignedIn = false;
-
 function handleCredentialResponse(response) {
-    // The response.credential is a JWT (JSON Web Token)
-    const responsePayload = decodeJwtResponse(response.credential);
-	userSignedIn = true;
-	
-	// FIX: Define email from the payload
-	const email = responsePayload.email;
-	
-    console.log("ID: " + responsePayload.sub);
-    console.log('Full Name: ' + responsePayload.name);
-    console.log('Given Name: ' + responsePayload.given_name);
-    console.log('Family Name: ' + responsePayload.family_name);
-    console.log("Image URL: " + responsePayload.picture);
-    console.log("Email: " + responsePayload.email);
+  // Decode the JWT credential
+  const responsePayload = decodeJwtResponse(response.credential);
+  userSignedIn = true;
 
-    // Update UI
-    document.getElementById('buttonDiv').style.display = 'none';
-    document.getElementById('user-info').style.display = 'block';
-    document.getElementById('user-name').innerText = responsePayload.name;
-    document.getElementById('user-pic').src = responsePayload.picture;
+  // Extract email safely
+  const email = responsePayload.email ? responsePayload.email.trim().toLowerCase() : "";
 
-	const roleSpan = document.getElementById("role-display");
-	roleSpan.innerText = "Verifying Role...";
+  console.log("ID: " + responsePayload.sub);
+  console.log("Full Name: " + responsePayload.name);
+  console.log("Given Name: " + responsePayload.given_name);
+  console.log("Family Name: " + responsePayload.family_name);
+  console.log("Image URL: " + responsePayload.picture);
+  console.log("Email: " + responsePayload.email);
 
-	const SHEET_ID = "1i8w-_jRwhOmjNxflLmqN80m8tPwDFUcJ2dON9yyywkQ";   // e.g. 1i8w-_jRwhOmjNxflLmqN80m8tPwDFUcJ2dON9yyywkQ
-    const SHEET_NAME = "AccessApproval";        // must match tab name exactly
-    const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
-	checkEmail();
-	
-    async function checkEmail() {
-      if (!email) {
-        alert("Please enter an email");
-        return;
+  // Update UI
+  document.getElementById('buttonDiv').style.display = 'none';
+  document.getElementById('user-info').style.display = 'block';
+  document.getElementById('user-name').innerText = responsePayload.name;
+  document.getElementById('user-pic').src = responsePayload.picture;
+
+  const roleSpan = document.getElementById("role-display");
+  roleSpan.innerText = "Verifying Role...";
+
+  const SHEET_ID = "1i8w-_jRwhOmjNxflLmqN80m8tPwDFUcJ2dON9yyywkQ";
+  const SHEET_NAME = "AccessApproval";
+  const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
+
+  checkEmail();
+
+  async function checkEmail() {
+    if (!email) {
+      alert("No email found in credential payload");
+      return;
+    }
+
+    try {
+      const res = await fetch(URL);
+      const text = await res.text();
+
+      // Strip JSONP wrapper
+      const json = JSON.parse(text.substring(47, text.length - 2));
+      const rows = json.table.rows;
+
+      // First row = headers (folder names)
+      const headers = rows[0].c.map((cell, idx) =>
+        cell && cell.v ? cell.v.toString().trim() : `Column${idx+1}`
+      );
+
+      let foundFolders = [];
+      let isSuper = false;
+
+      // Check first column for Super Admin
+      for (let row = 1; row < rows.length; row++) {
+        const cell = rows[row].c[0];
+        if (cell && cell.v && cell.v.toString().trim().toLowerCase() === email) {
+          isSuper = true;
+          break;
+        }
       }
 
-      try {
-        const res = await fetch(URL);
-        const text = await res.text();
-
-        // Strip JSONP wrapper
-        const json = JSON.parse(text.substring(47, text.length - 2));
-        const rows = json.table.rows;
-
-        // First row = headers (folder names)
-        const headers = rows[0].c.map((cell, idx) =>
-          cell && cell.v ? cell.v.toString().trim() : `Column${idx+1}`
-        );
-
-        let foundFolders = [];
-
-        // Start from row 1 (skip header row)
+      // If not Super, check other columns
+      if (!isSuper) {
         for (let row = 1; row < rows.length; row++) {
           rows[row].c.forEach((cell, colIndex) => {
+            if (colIndex === 0) return; // skip first column
             if (cell && cell.v) {
               const cellValue = cell.v.toString().trim().toLowerCase();
               if (cellValue === email) {
@@ -105,17 +117,22 @@ function handleCredentialResponse(response) {
             }
           });
         }
-
-        document.getElementById("result").innerText =
-          foundFolders.length > 0
-            ? roleSpan.innerText=`${foundFolders.join("|")} admin`
-            : roleSpan.innerText=`Student (default)`;
-
-      } catch (err) {
-        console.error("Error:", err);
-        document.getElementById("result").innerText = "Error fetching data.";
       }
+
+      // Display role
+      if (isSuper) {
+        roleSpan.innerText = "Super Admin";
+      } else if (foundFolders.length > 0) {
+        roleSpan.innerText = `${foundFolders.join(" | ")} admin`;
+      } else {
+        roleSpan.innerText = "Student (default)";
+      }
+
+    } catch (err) {
+      console.error("Error:", err);
+      document.getElementById("result").innerText = "Error fetching data.";
     }
+  }
 }
 
 // Simple function to decode the JWT token from Google
