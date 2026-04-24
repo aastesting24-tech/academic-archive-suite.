@@ -108,8 +108,8 @@ function handleCredentialResponse(response) {
 
         document.getElementById("result").innerText =
           foundFolders.length > 0
-            ? `${foundFolders.join("|")} admin`
-            : `Student (default)`;
+            ? roleSpan.innerText=`${foundFolders.join("|")} admin`
+            : roleSpan.innerText=`Student (default)`;
 
       } catch (err) {
         console.error("Error:", err);
