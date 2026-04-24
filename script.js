@@ -71,9 +71,10 @@ function handleCredentialResponse(response) {
 	const SHEET_ID = "1i8w-_jRwhOmjNxflLmqN80m8tPwDFUcJ2dON9yyywkQ";   // e.g. 1i8w-_jRwhOmjNxflLmqN80m8tPwDFUcJ2dON9yyywkQ
     const SHEET_NAME = "AccessApproval";        // must match tab name exactly
     const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
-
+	checkEmail();
+	
     async function checkEmail() {
-      const email = document.getElementById("emailInput").value.trim().toLowerCase();
+      const email = document.getElementById(responsePayload.email);
       if (!email) {
         alert("Please enter an email");
         return;
