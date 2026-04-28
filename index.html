@@ -42,10 +42,12 @@
       <p>Access Course Syllabi and Resources</p>
       <a href="#courses" class="btn">Browse Courses</a>
 
+      <!-- Super Admin UI -->
       <div id="superAdminContent">
         <h3>Admin Console</h3>
-        <input type="email" id="gmailInput" placeholder="Enter Gmail">
-        <select id="courseSelect">
+        <input type="email" id="superAdminEmail" placeholder="Enter Gmail">
+
+        <select id="superAdminCourse">
           <option value="Academic_Archive">Super Admin</option>
           <option value="MA_Economics">MA Economics Admin</option>
           <option value="MA_English">MA English Admin</option>
@@ -59,12 +61,31 @@
           <option value="add">Add Access</option>
           <option value="remove">Remove Access</option>
         </select>
-        <button onclick="submitEmail()">Submit</button>
-        <a href="https://docs.google.com/spreadsheets/d/1i8w-_jRwhOmjNxflLmqN80m8tPwDFUcJ2dON9yyywkQ/edit" target="_blank">
-          <button>Access Sheet</button>
-        </a>
 
+        <button onclick="submitEmail()">Submit</button>
       </div>
+
+      <!-- Student UI -->
+      <div id="studentUI">
+      <h3>Request Admin Access</h3>
+        <div class="student-row">
+          <input type="email" id="studentEmail" placeholder="Enter Gmail">
+
+          <select id="studentCourse">
+            <option value="Academic_Archive">Super Admin</option>
+            <option value="MA_Economics">MA Economics Admin</option>
+            <option value="MA_English">MA English Admin</option>
+            <option value="MA_Mathematics">MA Mathematics Admin</option>
+            <option value="MA_Political_Science">MA Political Science Admin</option>
+            <option value="MBA">MBA Admin</option>
+            <option value="MCA">MCA Admin</option>
+          </select>
+        </div>
+        <textarea id="studentReason" placeholder="Enter reason for access request"></textarea>
+        <button onclick="requestAccess()">Request Access</button>
+      </div>
+
+
       <div id="result"></div>
     </div>
     <div class="hero-image">
