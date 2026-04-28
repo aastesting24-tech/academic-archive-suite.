@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/png" href="logo.png">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js"></script>
 </head>
   
 <body>	
@@ -40,6 +41,31 @@
       <h1>Academic Archive Suite</h1>
       <p>Access Course Syllabi and Resources</p>
       <a href="#courses" class="btn">Browse Courses</a>
+
+      <div id="superAdminContent">
+        <h3>Admin Console</h3>
+        <input type="email" id="gmailInput" placeholder="Enter Gmail">
+        <select id="courseSelect">
+          <option value="Academic_Archive">Super Admin</option>
+          <option value="MA_Economics">MA Economics Admin</option>
+          <option value="MA_English">MA English Admin</option>
+          <option value="MA_Mathematics">MA Mathematics Admin</option>
+          <option value="MA_Political_Science">MA Political Science Admin</option>
+          <option value="MBA">MBA Admin</option>
+          <option value="MCA">MCA Admin</option>
+        </select>
+
+        <select id="actionSelect">
+          <option value="add">Add Access</option>
+          <option value="remove">Remove Access</option>
+        </select>
+        <button onclick="submitEmail()">Submit</button>
+        <a href="https://docs.google.com/spreadsheets/d/1i8w-_jRwhOmjNxflLmqN80m8tPwDFUcJ2dON9yyywkQ/edit" target="_blank">
+          <button>Access Sheet</button>
+        </a>
+
+      </div>
+      <div id="result"></div>
     </div>
     <div class="hero-image">
       <img src="books-cap.png" alt="Books, Graduation Cap, Diploma">
