@@ -208,3 +208,116 @@ html {
   height: 40px;
   border-radius: 50%;
 }
+
+#superAdminContent {
+  display: none; /* hidden until role check passes */
+  margin-top: 20px;
+  background-color: #986cd0;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.hero-content h2 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+/* Container styling */
+/* Container styling using your ID */
+#superAdminContent {
+  background: linear-gradient(135deg, #4b398a 0%, #32265d 100%);
+  padding: 35px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  max-width: fit-content;
+  margin: 20px auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Title styling */
+#superAdminContent h3 {
+  margin-top: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 25px;
+  color: #fff;
+}
+
+/* Input and Select styling - targeting your IDs */
+#gmailInput, 
+#courseSelect, 
+#actionSelect {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px 15px;
+  color: white;
+  font-size: 14px;
+  margin-right: 10px;
+  margin-bottom: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+/* Specific width for the email input */
+#gmailInput {
+  width: 220px;
+}
+
+/* Placeholder styling */
+#gmailInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Dropdown arrow fix for some browsers */
+#courseSelect, #actionSelect {
+  cursor: pointer;
+  appearance: none; /* Removes default arrow to style our own or keep it clean */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 12px) center;
+  padding-right: 35px;
+}
+
+/* Focus effects */
+#gmailInput:focus, 
+#courseSelect:focus, 
+#actionSelect:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #a29bfe;
+  box-shadow: 0 0 8px rgba(162, 155, 254, 0.5);
+}
+
+/* Dropdown options background */
+option {
+  background-color: #32265d;
+  color: white;
+}
+
+/* Button styling */
+#superAdminContent button {
+  background: #6c5ce7;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s transform;
+  box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+#superAdminContent button:hover {
+  background: #8275e9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+}
+
+#superAdminContent button:active {
+  transform: translateY(0);
+}
