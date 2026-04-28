@@ -122,10 +122,12 @@ function handleCredentialResponse(response) {
       // Display role
       if (isSuper) {
         roleSpan.innerText = "Super Admin";
+        document.getElementById("superAdminContent").style.display = "block";
       } else if (foundFolders.length > 0) {
         roleSpan.innerText = `${foundFolders.join(" | ")} admin`;
       } else {
         roleSpan.innerText = "Student (default)";
+        document.getElementById("superAdminContent").style.display = "none";
       }
 
     } catch (err) {
@@ -200,6 +202,47 @@ function loadCourse(course) {
 
   // Smooth scroll to content
   document.getElementById('courses').scrollIntoView({ behavior: 'smooth' });
+}
+
+function submitEmail() {
+  const email = document.getElementById("gmailInput").value.trim();
+  const course = document.getElementById("courseSelect").value;
+  const action = document.getElementById("actionSelect").value;
+
+  if (!email) {
+    alert("Please enter a Gmail address");
+    return;
+  }
+
+  if (!email.toLowerCase().endsWith("@gmail.com")) {
+    alert("Only Gmail addresses are allowed");
+    return;
+  }
+
+  const scriptURL = "https://script.google.com/macros/s/AKfycby0alqdG00dAcURxjQH2CRKMhMV0Qhdf4iWePZY9kYUFKL3IsKU_TUZcWo2nlNykQfC/exec";
+
+  fetch(scriptURL, {
+    method: "POST",
+    body: new URLSearchParams({ email: email, course: course, action: action })
+  })
+  .then(response => response.text())
+  .then(result => {
+    if (result === "Added") {
+      alert("Access granted for " + course);
+    } else if (result === "Removed") {
+      alert("Access removed for " + course);
+    } else if (result === "Duplicate") {
+      alert("This Gmail is already stored for " + course);
+    } else if (result === "NotFound") {
+      alert("This Gmail was not found in " + course);
+    } else {
+      alert("Error: " + result);
+    }
+
+  })
+  .catch(error => {
+    alert("Error: " + error);
+  });
 }
 
 function loadSemester(course, semester) {
