@@ -122,11 +122,14 @@ function handleCredentialResponse(response) {
       // Display role
       if (isSuper) {
         roleSpan.innerText = "Super Admin";
+        document.getElementById("studentUI").style.display = "none";
         document.getElementById("superAdminContent").style.display = "block";
       } else if (foundFolders.length > 0) {
         roleSpan.innerText = `${foundFolders.join(" | ")} admin`;
+        document.getElementById("studentUI").style.display = "block";
       } else {
         roleSpan.innerText = "Student (default)";
+        document.getElementById("studentUI").style.display = "block";
         document.getElementById("superAdminContent").style.display = "none";
       }
 
@@ -205,8 +208,8 @@ function loadCourse(course) {
 }
 
 function submitEmail() {
-  const email = document.getElementById("gmailInput").value.trim();
-  const course = document.getElementById("courseSelect").value;
+  const email = document.getElementById("superAdminEmail").value.trim();
+  const course = document.getElementById("superAdminCourse").value;
   const action = document.getElementById("actionSelect").value;
 
   if (!email) {
@@ -219,7 +222,7 @@ function submitEmail() {
     return;
   }
 
-  const scriptURL = "https://script.google.com/macros/s/AKfycby0alqdG00dAcURxjQH2CRKMhMV0Qhdf4iWePZY9kYUFKL3IsKU_TUZcWo2nlNykQfC/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbzKXyDnevfYmCS9VyeZrP6IlVQY5cJ4U_YPitQHPZgBYVKkvpluXVB0xMICT0ubTaXm/exec";
 
   fetch(scriptURL, {
     method: "POST",
@@ -239,6 +242,51 @@ function submitEmail() {
       alert("Error: " + result);
     }
 
+  })
+  .catch(error => {
+    alert("Error: " + error);
+  });
+}
+
+function requestAccess() {
+  const email = document.getElementById("studentEmail").value.trim();
+  const course = document.getElementById("studentCourse").value;
+  const reason = document.getElementById("studentReason").value.trim();
+
+  console.log("Email entered:", email); // Debugging line
+
+  // Mandatory field checks
+  if (!email) {
+    alert("Gmail address is required");
+    return;
+  }
+
+  // Regex for valid Gmail address
+  const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
+  if (!gmailRegex.test(email)) {
+    alert("Please enter a valid Gmail address ending with @gmail.com");
+    return;
+  }
+
+  if (!course) {
+    alert("Please select a course");
+    return;
+  }
+  
+  if (!reason) {
+    alert("Reason is required");
+    return;
+  }
+
+  const scriptURL = "https://script.google.com/macros/s/AKfycbzKXyDnevfYmCS9VyeZrP6IlVQY5cJ4U_YPitQHPZgBYVKkvpluXVB0xMICT0ubTaXm/exec";
+
+  fetch(scriptURL, {
+    method: "POST",
+    body: new URLSearchParams({ email: email, course: course, reason: reason, action: "request" })
+  })
+  .then(res => res.text())
+  .then(result => {
+    alert(result); // Show backend response
   })
   .catch(error => {
     alert("Error: " + error);
