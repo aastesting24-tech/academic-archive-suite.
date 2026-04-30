@@ -105,20 +105,23 @@ function handleCredentialResponse(response) {
         }
       }
 
-      // If not Super, check other columns
-      if (!isSuper) {
-        for (let row = 1; row < rows.length; row++) {
-          rows[row].c.forEach((cell, colIndex) => {
-            if (colIndex === 0) return; // skip first column
-            if (cell && cell.v) {
-              const cellValue = cell.v.toString().trim().toLowerCase();
-              if (cellValue === email) {
-                foundFolders.push(headers[colIndex]);
-              }
-            }
-          });
-        }
-      }
+    // If not Super, check other columns
+	const allowedCourses = headers.slice(1, headers.length - 6);
+
+	if (!isSuper) {
+  		for (let row = 1; row < rows.length; row++) {
+    		rows[row].c.forEach((cell, colIndex) => {
+      			const header = headers[colIndex];
+      			if (!allowedCourses.includes(header)) return; // skip last 6 + Super Admin
+      			if (cell && cell.v) {
+        			const cellValue = cell.v.toString().trim().toLowerCase();
+        			if (cellValue === email) {
+          				foundFolders.push(`${header}`);
+        			}
+      			}
+    		});
+  		}
+	}
 
       // Display role
       if (isSuper) {
