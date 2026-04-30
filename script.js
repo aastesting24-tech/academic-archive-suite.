@@ -89,8 +89,8 @@ function handleCredentialResponse(response) {
       const rows = json.table.rows;
 
       // First row = headers (folder names)
-      const headers = rows[0].c.map((cell, idx) =>
-        cell && cell.v ? cell.v.toString().trim() : `Column${idx+1}`
+      const headers = json.table.cols.map((col, idx) =>
+        col.label ? col.label.trim() : `Column${idx+1}`
       );
 
       let foundFolders = [];
@@ -106,22 +106,23 @@ function handleCredentialResponse(response) {
       }
 
     // If not Super, check other columns
-	const allowedCourses = headers.slice(1, headers.length - 6);
+    const allowedIndexes = [...Array(headers.length - 6).keys()].slice(1);
 
-	if (!isSuper) {
-  		for (let row = 1; row < rows.length; row++) {
-    		rows[row].c.forEach((cell, colIndex) => {
-      			const header = headers[colIndex];
-      			if (!allowedCourses.includes(header)) return; // skip last 6 + Super Admin
-      			if (cell && cell.v) {
-        			const cellValue = cell.v.toString().trim().toLowerCase();
-        			if (cellValue === email) {
-          				foundFolders.push(`${header}`);
-        			}
-      			}
-    		});
-  		}
-	}
+      if (!isSuper) {
+        // Loop through actual data rows only
+        for (let row = 0; row < rows.length; row++) {
+          rows[row].c.forEach((cell, colIndex) => {
+            if (!allowedIndexes.includes(colIndex)) return; // skip Super Admin + last 6
+            if (cell && cell.v) {
+              const cellValue = cell.v.toString().trim().toLowerCase();
+              if (cellValue === email.toLowerCase().trim()) {
+                // ✅ Push the actual header name from cols
+                foundFolders.push(`${headers[colIndex]}`);
+              }
+            }
+          });
+        }
+      }
 
       // Display role
       if (isSuper) {
