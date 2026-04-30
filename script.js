@@ -47,7 +47,6 @@ function handleCredentialResponse(response) {
   // Decode the JWT credential
   const responsePayload = decodeJwtResponse(response.credential);
   window.loggedInEmail = responsePayload.email;
-  alert("Signed in as: " + window.loggedInEmail);
   userSignedIn = true;
 
   // Extract email safely
