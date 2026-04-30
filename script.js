@@ -46,6 +46,8 @@ let userSignedIn = false;
 function handleCredentialResponse(response) {
   // Decode the JWT credential
   const responsePayload = decodeJwtResponse(response.credential);
+  window.loggedInEmail = responsePayload.email;
+  alert("Signed in as: " + window.loggedInEmail);
   userSignedIn = true;
 
   // Extract email safely
@@ -124,9 +126,11 @@ function handleCredentialResponse(response) {
         roleSpan.innerText = "Super Admin";
         document.getElementById("studentUI").style.display = "none";
         document.getElementById("superAdminContent").style.display = "block";
+		alert("Signed in as: Super admin");
       } else if (foundFolders.length > 0) {
         roleSpan.innerText = `${foundFolders.join(" | ")} admin`;
         document.getElementById("studentUI").style.display = "block";
+		alert("Signed in as: Course admin");
       } else {
         roleSpan.innerText = "Student (default)";
         document.getElementById("studentUI").style.display = "block";
@@ -226,7 +230,7 @@ function submitEmail() {
 
   fetch(scriptURL, {
     method: "POST",
-    body: new URLSearchParams({ email: email, course: course, action: action })
+    body: new URLSearchParams({ email: email, course: course, action: action, requestor: window.loggedInEmail })
   })
   .then(response => response.text())
   .then(result => {
